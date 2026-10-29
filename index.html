@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gerbera Morada</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Pinyon+Script&display=swap">
+<style>
+/* Composición: la flor animada a la izquierda sobre un cielo nocturno, la carta en papel rayado a la derecha; en celular se apilan. */
+:root {
+  --night: #160d2b;
+  --night-2: #2c1753;
+  --petal: #a65de0;
+  --petal-deep: #5f2aa3;
+  --gold: #f2c76b;
+  --paper: #f8f2fb;
+  --paper-line: rgba(95, 42, 163, 0.10);
+  --ink: #3a2358;
+  --ink-soft: #7a6293;
+  --font-script: 'Pinyon Script', 'Snell Roundhand', 'Apple Chancery', cursive;
+  --font-body: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+
+body {
+  background-color: var(--night);
+  background-image:
+    radial-gradient(ellipse 70% 55% at 25% 30%, var(--night-2) 0%, rgba(44, 23, 83, 0) 70%),
+    radial-gradient(ellipse 60% 50% at 85% 90%, rgba(95, 42, 163, 0.35) 0%, rgba(95, 42, 163, 0) 70%);
+  background-attachment: fixed;
+  color: var(--paper);
+  font-family: var(--font-body);
+  padding-block: clamp(20px, 5vw, 56px);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  min-height: 100vh;
+}
+
+.wrap {
+  max-width: 1080px;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(24px, 4vw, 56px);
+  align-items: center;
+}
+[hidden] { display: none !important; }
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(22, 13, 43, 0.62);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  padding-top: max(16px, env(safe-area-inset-top, 0px));
+  padding-bottom: max(16px, env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.overlay .letter {
+  width: 100%;
+  max-width: 600px;
+  max-height: 100%;
+  overflow-y: auto;
+}
+.close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-soft);
+  font-family: var(--font-body);
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.close:hover { color: var(--petal-deep); }
+.close:focus-visible { outline: 2px solid var(--petal-deep); outline-offset: 2px; }
+.letter.show { animation: rise 0.9s ease-out both; }
+@keyframes rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .letter.show { animation: none; }
+}
+
+.stage { display: flex; flex-direction: column; align-items: center; gap: 12px; min-width: 0; }
+#flor {
+  display: block;
+  width: 100%;
+  max-width: 460px;
+  aspect-ratio: 5 / 6;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.replay {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  background: transparent;
+  border: 1px solid rgba(242, 199, 107, 0.55);
+  padding: 8px 20px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.25s, color 0.25s;
+}
+.replay:hover { background: var(--gold); color: var(--night); }
+.replay:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+.letter {
+  min-width: 0;
+  background-color: var(--paper);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(2.3rem - 1px),
+    var(--paper-line) calc(2.3rem - 1px),
+    var(--paper-line) 2.3rem
+  );
+  background-position: 0 clamp(28px, 5vw, 52px);
+  color: var(--ink);
+  padding: clamp(28px, 5vw, 52px) clamp(22px, 5vw, 56px);
+  border-radius: 3px;
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  position: relative;
+}
+.letter::before {
+  content: "";
+  position: absolute;
+  top: 0; left: clamp(22px, 5vw, 56px);
+  width: 14px; height: 46px;
+  background: var(--petal);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
+  opacity: 0.85;
+}
+
+.greeting {
+  font-family: var(--font-script);
+  font-size: clamp(2.4rem, 6vw, 3.2rem);
+  line-height: 1.2;
+  color: var(--petal-deep);
+  margin: 0 0 0.6rem;
+  text-wrap: balance;
+}
+.body {
+  font-size: clamp(1.2rem, 2.6vw, 1.38rem);
+  line-height: 2.3rem;
+  max-width: 34em;
+  outline: none;
+}
+.body p { margin: 0 0 2.3rem; text-wrap: pretty; }
+.body p:last-of-type { margin-bottom: 0; }
+.body:focus-visible { outline: 2px dashed rgba(95, 42, 163, 0.4); outline-offset: 8px; }
+.body em { color: var(--petal-deep); font-style: italic; }
+.sign {
+  font-family: var(--font-script);
+  font-size: clamp(1.9rem, 4.6vw, 2.5rem);
+  line-height: 1.3;
+  color: var(--petal-deep);
+  margin: 1.6rem 0 0;
+}
+.sign small {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+</style>
+
+<style>html,body{margin:0}</style>
+</head>
+<body>
+<main class="wrap">
+  <section class="stage" aria-label="Una gerbera morada que florece">
+    <canvas id="flor" role="img" aria-label="Gerbera morada meciéndose suavemente, con pétalos y destellos a su alrededor"></canvas>
+    <button class="replay" id="abrir" type="button" aria-expanded="false" aria-controls="carta">Abrir carta</button>
+  </section>
+
+  <div class="overlay" id="overlay" hidden>
+  <article class="letter" id="carta" role="dialog" aria-modal="true" aria-label="Carta">
+    <button class="close" id="cerrar" type="button" aria-label="Cerrar carta">&times;</button>
+    <h1 class="greeting">Para ti,</h1>
+    <div class="body" contenteditable="true" spellcheck="false" aria-label="Carta">
+      <p>Sé que ha pasado mucho tiempo desde la última vez que nos vimos, y aun así no hay día en que no piense en ti.</p>
+      <p>Quiero que sepas que, aunque pasen los días y la distancia se haga más larga, <em>siempre habrá una parte de ti en mi corazón y en mi alma</em>. Esa parte se queda conmigo y va donde yo voy.</p>
+      <p>Elegí una gerbera morada para decirte lo que a veces me cuesta decir en voz alta: te quiero mucho, hoy, mañana y el día en que por fin volvamos a vernos.</p>
+    </div>
+    <p class="sign">Con todo mi cariño</p>
+  </article>
+  </div>
+</main>
+
+<script>
+(function () {
+  var cv = document.getElementById('flor');
+  var ctx = cv.getContext('2d');
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var S = 1;
+  var start = performance.now();
+  var TAU = Math.PI * 2;
+
+  function resize() {
+    var r = cv.getBoundingClientRect();
+    var d = Math.min(window.devicePixelRatio || 1, 2);
+    cv.width = Math.max(1, Math.round(r.width * d));
+    cv.height = Math.max(1, Math.round(r.height * d));
+    S = cv.width / 100;
+    if (reduce) draw(10);
+  }
+
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function easeOut(x) { return 1 - Math.pow(1 - x, 3); }
+
+  var P = [];
+  for (var i = 0; i < 22; i++) {
+    P.push({ x: Math.random() * 100, y: Math.random() * 130, v: 2 + Math.random() * 3, s: 0.8 + Math.random() * 1.2, ph: Math.random() * TAU, a: 0.25 + Math.random() * 0.4 });
+  }
+  var STARS = [];
+  for (var j = 0; j < 26; j++) {
+    STARS.push({ x: Math.random() * 100, y: Math.random() * 100, r: 0.2 + Math.random() * 0.35, ph: Math.random() * TAU });
+  }
+
+  var LAYERS = [
+    { n: 28, len: 31, w: 3.8, off: 0.0,  a: '#7f3cc2', b: '#c48af0' },
+    { n: 24, len: 27, w: 3.8, off: 0.13, a: '#8f4bd4', b: '#d2a1f6' },
+    { n: 20, len: 22, w: 3.6, off: 0.08, a: '#a15fe2', b: '#e2bcfb' }
+  ];
+
+  function leaf(x, y, ang, len, w) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(ang);
+    var g = ctx.createLinearGradient(0, 0, len, 0);
+    g.addColorStop(0, '#2f6a45');
+    g.addColorStop(1, '#5aa070');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.quadraticCurveTo(len * 0.4, -w, len, 0);
+    ctx.quadraticCurveTo(len * 0.4, w, 0, 0);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(220,255,230,0.28)';
+    ctx.lineWidth = 0.2;
+    ctx.beginPath();
+    ctx.moveTo(1, 0);
+    ctx.lineTo(len * 0.88, 0);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function petal(len, w) {
+    ctx.beginPath();
+    ctx.moveTo(-w * 0.3, 4);
+    ctx.bezierCurveTo(-w * 0.62, len * 0.4, -w * 0.55, len * 0.9, 0, len);
+    ctx.bezierCurveTo(w * 0.55, len * 0.9, w * 0.62, len * 0.4, w * 0.3, 4);
+    ctx.closePath();
+  }
+
+  function draw(t) {
+    ctx.setTransform(S, 0, 0, S, 0, 0);
+    var Hh = cv.height / S;
+    ctx.clearRect(0, 0, 100, Hh);
+
+    // Estrellas
+    for (var si = 0; si < STARS.length; si++) {
+      var st = STARS[si];
+      var al = 0.25 + 0.55 * (0.5 + 0.5 * Math.sin(t * 1.3 + st.ph));
+      ctx.fillStyle = 'rgba(255,240,200,' + al.toFixed(3) + ')';
+      ctx.beginPath();
+      ctx.arc(st.x, st.y, st.r, 0, TAU);
+      ctx.fill();
+    }
+
+    // Pétalos que caen
+    for (var pi = 0; pi < P.length; pi++) {
+      var p = P[pi];
+      var py = ((p.y + t * p.v) % 130) - 5;
+      var px = p.x + Math.sin(t * 0.6 + p.ph) * 4;
+      ctx.save();
+      ctx.translate(px, py);
+      ctx.rotate(Math.sin(t * 0.9 + p.ph) * 1.2);
+      ctx.fillStyle = 'rgba(196,138,240,' + p.a.toFixed(3) + ')';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, p.s, p.s * 0.5, 0, 0, TAU);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    var sway = Math.sin(t * 0.7);
+    var b = easeOut(clamp(t / 3.2, 0, 1));
+    var hx = 50 + sway * 1.6;
+    var hy = 44;
+
+    // Resplandor
+    var glow = ctx.createRadialGradient(hx, hy, 4, hx, hy, 50);
+    glow.addColorStop(0, 'rgba(166,93,224,' + (0.38 * b).toFixed(3) + ')');
+    glow.addColorStop(1, 'rgba(166,93,224,0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, 100, Hh);
+
+    // Tallo
+    var grow = easeOut(clamp(t / 1.6, 0, 1));
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = '#4c8a5e';
+    ctx.lineWidth = 1.7;
+    ctx.beginPath();
+    ctx.moveTo(50, 122);
+    ctx.quadraticCurveTo(50 - sway * 2.2, 84, hx, hy + 4 + (1 - grow) * 30);
+    ctx.stroke();
+
+    // Hojas
+    var lg = grow;
+    if (lg > 0.05) {
+      leaf(49.6, 104, Math.PI + 0.5 + sway * 0.04, 20 * lg, 5.5 * lg);
+      leaf(50.2, 94, -0.55 - sway * 0.04, 17 * lg, 5 * lg);
+    }
+
+    // Cabeza de la flor
+    ctx.save();
+    ctx.translate(hx, hy);
+    ctx.rotate(sway * 0.012);
+    var breathe = 1 + Math.sin(t * 1.4) * 0.008;
+    ctx.scale(breathe, breathe);
+
+    for (var li = 0; li < LAYERS.length; li++) {
+      var L = LAYERS[li];
+      for (var k = 0; k < L.n; k++) {
+        var ang = (k / L.n) * TAU + L.off + (1 - b) * 0.7;
+        var vary = 0.9 + 0.1 * Math.sin(k * 7.1 + li * 3.0);
+        var len = L.len * b * vary;
+        if (len < 1) continue;
+        ctx.save();
+        ctx.rotate(ang);
+        var g = ctx.createLinearGradient(0, 0, 0, len);
+        g.addColorStop(0, L.a);
+        g.addColorStop(0.6, L.b);
+        g.addColorStop(1, L.b);
+        ctx.fillStyle = g;
+        petal(len, L.w);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(58,18,108,0.30)';
+        ctx.lineWidth = 0.15;
+        ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,255,255,0.14)';
+        ctx.lineWidth = 0.18;
+        ctx.beginPath();
+        ctx.moveTo(0, 6);
+        ctx.lineTo(0, len * 0.82);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    // Centro
+    var cr = 7.4 * b;
+    if (cr > 0.5) {
+      var cg = ctx.createRadialGradient(0, 0, 0, 0, 0, cr);
+      cg.addColorStop(0, '#1d0e3a');
+      cg.addColorStop(1, '#3a1d6b');
+      ctx.fillStyle = cg;
+      ctx.beginPath();
+      ctx.arc(0, 0, cr, 0, TAU);
+      ctx.fill();
+
+      var golden = 2.39996;
+      for (var f = 1; f < 170; f++) {
+        var rr = 0.46 * Math.sqrt(f) * b;
+        var aa = f * golden;
+        var m = f / 170;
+        var rC = Math.round(70 + m * 172);
+        var gC = Math.round(40 + m * 150);
+        var bC = Math.round(120 - m * 20);
+        ctx.fillStyle = 'rgb(' + rC + ',' + gC + ',' + bC + ')';
+        ctx.beginPath();
+        ctx.arc(Math.cos(aa) * rr, Math.sin(aa) * rr, (0.26 + m * 0.2) * b, 0, TAU);
+        ctx.fill();
+      }
+      for (var s = 0; s < 22; s++) {
+        var sa = (s / 22) * TAU + 0.1;
+        ctx.fillStyle = '#f2c76b';
+        ctx.beginPath();
+        ctx.arc(Math.cos(sa) * 6.6 * b, Math.sin(sa) * 6.6 * b, 0.42 * b, 0, TAU);
+        ctx.fill();
+      }
+    }
+    ctx.restore();
+
+    // Destellos junto a la flor
+    if (b > 0.9) {
+      for (var q = 0; q < 6; q++) {
+        var qa = q * 1.05 + 0.4;
+        var qr = 36 + (q % 3) * 4;
+        var qx = hx + Math.cos(qa) * qr;
+        var qy = hy + Math.sin(qa) * qr * 0.95;
+        var qal = 0.5 + 0.5 * Math.sin(t * 1.8 + q * 1.7);
+        ctx.strokeStyle = 'rgba(242,199,107,' + (qal * 0.85).toFixed(3) + ')';
+        ctx.lineWidth = 0.25;
+        var sz = 0.9 + qal * 0.9;
+        ctx.beginPath();
+        ctx.moveTo(qx - sz, qy); ctx.lineTo(qx + sz, qy);
+        ctx.moveTo(qx, qy - sz); ctx.lineTo(qx, qy + sz);
+        ctx.stroke();
+      }
+    }
+  }
+
+  function frame(now) {
+    draw((now - start) / 1000);
+    requestAnimationFrame(frame);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+
+  function replay() { start = performance.now(); if (reduce) draw(10); }
+  cv.addEventListener('click', replay);
+  var btn = document.getElementById('abrir');
+  var overlay = document.getElementById('overlay');
+  var carta = document.getElementById('carta');
+  var cerrar = document.getElementById('cerrar');
+
+  function abrirCarta() {
+    overlay.hidden = false;
+    carta.classList.add('show');
+    btn.setAttribute('aria-expanded', 'true');
+    try { cerrar.focus({ preventScroll: true }); } catch (e) {}
+  }
+  function cerrarCarta() {
+    overlay.hidden = true;
+    carta.classList.remove('show');
+    btn.setAttribute('aria-expanded', 'false');
+    try { btn.focus({ preventScroll: true }); } catch (e) {}
+  }
+  btn.addEventListener('click', abrirCarta);
+  cerrar.addEventListener('click', cerrarCarta);
+  overlay.addEventListener('click', function (e) { if (e.target === overlay) cerrarCarta(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !overlay.hidden) cerrarCarta();
+  });
+
+  if (reduce) { draw(10); } else { requestAnimationFrame(frame); }
+})();
+</script>
+
+</body>
+</html>
